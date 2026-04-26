@@ -1,4 +1,3 @@
-import * as psnApi from "psn-api";
 import type {
   ProfileFromUserNameResponse,
   SocialAccountResult,
@@ -8,6 +7,10 @@ import type {
 import { LookupNotFoundError } from "../errors.js";
 import type { AccountLookupClient, AccountLookupResult } from "../types.js";
 import type { AuthorizationProvider } from "./psnAuthManager.js";
+import {
+  getProfileFromUserName,
+  makeUniversalSearch
+} from "./psnApiRuntime.js";
 
 interface PsnLookupDependencies {
   getProfileFromUserName: (
@@ -22,8 +25,8 @@ interface PsnLookupDependencies {
 }
 
 const defaultDependencies: PsnLookupDependencies = {
-  getProfileFromUserName: psnApi.getProfileFromUserName,
-  makeUniversalSearch: psnApi.makeUniversalSearch
+  getProfileFromUserName,
+  makeUniversalSearch
 };
 
 const normalizeUsername = (username: string): string =>

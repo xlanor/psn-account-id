@@ -1,5 +1,9 @@
-import * as psnApi from "psn-api";
 import type { AuthorizationPayload, AuthTokensResponse } from "psn-api";
+import {
+  exchangeAccessCodeForAuthTokens,
+  exchangeNpssoForAccessCode,
+  exchangeRefreshTokenForAuthTokens
+} from "./psnApiRuntime.js";
 
 interface CachedAuthTokens extends AuthTokensResponse {
   accessTokenExpiresAt: number;
@@ -22,9 +26,9 @@ interface PsnAuthDependencies {
 }
 
 const defaultDependencies: PsnAuthDependencies = {
-  exchangeAccessCodeForAuthTokens: psnApi.exchangeAccessCodeForAuthTokens,
-  exchangeNpssoForAccessCode: psnApi.exchangeNpssoForAccessCode,
-  exchangeRefreshTokenForAuthTokens: psnApi.exchangeRefreshTokenForAuthTokens
+  exchangeAccessCodeForAuthTokens,
+  exchangeNpssoForAccessCode,
+  exchangeRefreshTokenForAuthTokens
 };
 
 export interface AuthorizationProvider {

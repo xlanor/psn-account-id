@@ -11,6 +11,10 @@ spec:
       app: psn-account-lookup-api
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "3000"
       labels:
         app: psn-account-lookup-api
     spec:

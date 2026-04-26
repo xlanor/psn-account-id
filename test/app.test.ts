@@ -4,6 +4,7 @@ import test from "node:test";
 import type { AddressInfo } from "node:net";
 
 import { createApp } from "../src/app.js";
+import { metricsRegistry } from "../src/metrics.js";
 import type { AccountLookupService } from "../src/types.js";
 
 const clientHeaders = {
@@ -151,6 +152,45 @@ test("GET /api/psn/account-id returns the cached lookup payload", async () => {
       assert.equal(response.headers.get("x-cache"), "HIT");
       assert.equal(body.accountId, "962157895908076652");
       assert.equal(body.base64AccountId, "eGVsbmlhQGM2LnVz");
+    }
+  );
+});
+
+test("GET /metrics exposes per-client lookup counters", async () => {
+  metricsRegistry.resetMetrics();
+
+  await withServer(
+    {
+      lookup: async () => ({
+        onlineId: "xelnia",
+        accountId: "962157895908076652",
+        npId: "eGVsbmlhQGM2LnVz",
+        base64AccountId: "eGVsbmlhQGM2LnVz",
+        resolvedBy: "profile",
+        cached: false
+      })
+    },
+    {},
+    async (baseUrl) => {
+      const lookupResponse = await fetch(
+        `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: clientHeaders
+        }
+      );
+      const metricsResponse = await fetch(`${baseUrl}/metrics`);
+      const metricsText = await metricsResponse.text();
+
+      assert.equal(lookupResponse.status, 200);
+      assert.equal(metricsResponse.status, 200);
+      assert.match(
+        metricsText,
+        /psn_api_lookup_requests_total\{client_name="chiaki-ng",status_code="200",resolved_by="profile",cache="miss"\} 1/
+      );
+      assert.match(
+        metricsText,
+        /psn_api_http_requests_total\{route="account_id_lookup",method="GET",status_code="200",client_name="chiaki-ng"\} 1/
+      );
     }
   );
 });

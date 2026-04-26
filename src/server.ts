@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { createApp } from "./app.js";
 import { readConfig } from "./config.js";
 import { PsnAuthManager } from "./psn/psnAuthManager.js";

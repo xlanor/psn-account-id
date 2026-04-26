@@ -117,6 +117,26 @@ Example response when the legacy profile lookup succeeds:
 
 If the legacy profile endpoint is unavailable for that user, the service falls back to PSN universal search. In that case `accountId` is still returned, but `npId` and `base64AccountId` will be `null`.
 
+## Metrics
+
+The service also exposes Prometheus-format metrics at:
+
+```text
+GET /metrics
+```
+
+This is intended for cluster-internal scraping, not public ingress exposure.
+
+Useful metrics include:
+
+- `psn_api_http_requests_total`
+- `psn_api_http_request_duration_seconds`
+- `psn_api_lookup_requests_total`
+- `psn_api_rate_limited_requests_total`
+- `psn_api_concurrency_rejected_requests_total`
+
+Client traffic is labeled by `client_name`, which is derived from `X-Client-Information` and currently resolves to `akira`, `chiaki-ng`, or `unknown`.
+
 ## Cache
 
 - In-memory TTL cache keyed by normalized username

@@ -9,6 +9,7 @@ They intentionally do **not** restrict source IP ranges, because this API is int
 - Istio local ingress rate limiting
 - App-side per-IP rate limiting
 - App-side concurrency cap and PSN upstream timeout
+- Cluster-internal Prometheus metrics at `/metrics`
 
 ## Files
 

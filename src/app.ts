@@ -3,8 +3,10 @@ import express from "express";
 import { LookupNotFoundError } from "./errors.js";
 import { createClientInformationMiddleware } from "./middleware/clientInformation.js";
 import { createIpRateLimitMiddleware } from "./middleware/ipRateLimit.js";
+import { metricsHandler, metricsMiddleware } from "./metrics.js";
 import { securityHeadersMiddleware } from "./middleware/securityHeaders.js";
 import type { AccountLookupService } from "./types.js";
+import { logError } from "./utils/logError.js";
 import { ConcurrencyGate } from "./utils/concurrencyGate.js";
 
 interface CreateAppOptions {
@@ -41,6 +43,7 @@ export const createApp = ({
   app.disable("x-powered-by");
   app.set("trust proxy", trustProxy);
   app.use(securityHeadersMiddleware);
+  app.use(metricsMiddleware);
 
   app.use(
     createIpRateLimitMiddleware({
@@ -52,6 +55,8 @@ export const createApp = ({
   app.get("/health", (_request, response) => {
     response.json({ status: "ok" });
   });
+
+  app.get("/metrics", metricsHandler);
 
   app.use("/api/psn/account-id", createClientInformationMiddleware());
 
@@ -89,6 +94,8 @@ export const createApp = ({
 
       response.setHeader("Cache-Control", `private, max-age=${cacheTtlSeconds}`);
       response.setHeader("X-Cache", result.cached ? "HIT" : "MISS");
+      response.locals.cacheStatus = result.cached ? "hit" : "miss";
+      response.locals.resolvedBy = result.resolvedBy;
       response.json(result);
     } catch (error) {
       if (error instanceof LookupNotFoundError) {
@@ -97,6 +104,19 @@ export const createApp = ({
         });
         return;
       }
+
+      logError(
+        "PSN lookup failed",
+        {
+          clientName:
+            typeof response.locals.clientName === "string"
+              ? response.locals.clientName
+              : "unknown",
+          path: request.path,
+          username
+        },
+        error
+      );
 
       response.status(502).json({
         error: "PSN lookup failed."
