@@ -109,13 +109,16 @@ Example response when the legacy profile lookup succeeds:
   "onlineId": "xelnia",
   "accountId": "962157895908076652",
   "npId": "eGVsbmlhQGM2LnVz",
-  "base64AccountId": "eGVsbmlhQGM2LnVz",
+  "base64AccountId": "bCxwM4JFWg0=",
+  "hexAccountId": "6c2c703382455a0d",
   "resolvedBy": "profile",
   "cached": false
 }
 ```
 
-If the legacy profile endpoint is unavailable for that user, the service falls back to PSN universal search. In that case `accountId` is still returned, but `npId` and `base64AccountId` will be `null`.
+`base64AccountId` is the Chiaki-compatible base64 encoding of the numeric `accountId`. `hexAccountId` is the same identifier in hex form for Save Wizard style usage. `npId` is returned separately when the legacy profile endpoint is available.
+
+If the legacy profile endpoint is unavailable for that user, the service falls back to PSN universal search. In that case `accountId`, `base64AccountId`, and `hexAccountId` are still returned, but `npId` will be `null`.
 
 ## Metrics
 

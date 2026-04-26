@@ -5,6 +5,7 @@ export interface AccountLookupResult {
   accountId: string | null;
   npId: string | null;
   base64AccountId: string | null;
+  hexAccountId: string | null;
   resolvedBy: LookupResolutionSource;
 }
 
@@ -19,4 +20,3 @@ export interface AccountLookupClient {
 export interface AccountLookupService {
   lookup(username: string): Promise<CachedAccountLookupResult>;
 }
-

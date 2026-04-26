@@ -10,4 +10,5 @@ export * from "./psn/psnLookupClient.js";
 export * from "./services/cachedAccountLookupService.js";
 export * from "./types.js";
 export * from "./utils/concurrencyGate.js";
+export * from "./utils/accountIdFormats.js";
 export * from "./utils/logError.js";

@@ -6,6 +6,7 @@ import type {
 
 import { LookupNotFoundError } from "../errors.js";
 import type { AccountLookupClient, AccountLookupResult } from "../types.js";
+import { formatAccountId } from "../utils/accountIdFormats.js";
 import type { AuthorizationProvider } from "./psnAuthManager.js";
 import {
   getProfileFromUserName,
@@ -75,7 +76,7 @@ export class PsnLookupClient implements AccountLookupClient {
         onlineId: fallbackResult.socialMetadata.onlineId,
         accountId: fallbackResult.socialMetadata.accountId,
         npId: null,
-        base64AccountId: null,
+        ...formatAccountId(fallbackResult.socialMetadata.accountId),
         resolvedBy: "search"
       };
     }
@@ -106,11 +107,13 @@ export class PsnLookupClient implements AccountLookupClient {
   private fromProfile(
     profileResponse: ProfileFromUserNameResponse
   ): AccountLookupResult {
+    const accountIdFormats = formatAccountId(profileResponse.profile.accountId);
+
     return {
       onlineId: profileResponse.profile.onlineId,
       accountId: profileResponse.profile.accountId,
       npId: profileResponse.profile.npId,
-      base64AccountId: profileResponse.profile.npId,
+      ...accountIdFormats,
       resolvedBy: "profile"
     };
   }

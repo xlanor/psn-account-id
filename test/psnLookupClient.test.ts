@@ -61,7 +61,8 @@ test("returns accountId and npId from the profile endpoint when available", asyn
     onlineId: "xelnia",
     accountId: "962157895908076652",
     npId: "eGVsbmlhQGM2LnVz",
-    base64AccountId: "eGVsbmlhQGM2LnVz",
+    base64AccountId: "bCxwM4JFWg0=",
+    hexAccountId: "6c2c703382455a0d",
     resolvedBy: "profile"
   });
 });
@@ -116,7 +117,8 @@ test("falls back to universal search when the profile endpoint fails", async () 
     onlineId: "xelnia",
     accountId: "962157895908076652",
     npId: null,
-    base64AccountId: null,
+    base64AccountId: "bCxwM4JFWg0=",
+    hexAccountId: "6c2c703382455a0d",
     resolvedBy: "search"
   });
 });

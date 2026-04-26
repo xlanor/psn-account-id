@@ -133,7 +133,8 @@ test("GET /api/psn/account-id returns the cached lookup payload", async () => {
         onlineId: "xelnia",
         accountId: "962157895908076652",
         npId: "eGVsbmlhQGM2LnVz",
-        base64AccountId: "eGVsbmlhQGM2LnVz",
+        base64AccountId: "bCxwM4JFWg0=",
+        hexAccountId: "6c2c703382455a0d",
         resolvedBy: "profile",
         cached: true
       })
@@ -151,7 +152,8 @@ test("GET /api/psn/account-id returns the cached lookup payload", async () => {
       assert.equal(response.status, 200);
       assert.equal(response.headers.get("x-cache"), "HIT");
       assert.equal(body.accountId, "962157895908076652");
-      assert.equal(body.base64AccountId, "eGVsbmlhQGM2LnVz");
+      assert.equal(body.base64AccountId, "bCxwM4JFWg0=");
+      assert.equal(body.hexAccountId, "6c2c703382455a0d");
     }
   );
 });
@@ -165,7 +167,8 @@ test("GET /metrics exposes per-client lookup counters", async () => {
         onlineId: "xelnia",
         accountId: "962157895908076652",
         npId: "eGVsbmlhQGM2LnVz",
-        base64AccountId: "eGVsbmlhQGM2LnVz",
+        base64AccountId: "bCxwM4JFWg0=",
+        hexAccountId: "6c2c703382455a0d",
         resolvedBy: "profile",
         cached: false
       })
@@ -216,7 +219,8 @@ test("GET /api/psn/account-id rejects requests when concurrency is exhausted", a
           onlineId: "xelnia",
           accountId: "962157895908076652",
           npId: "eGVsbmlhQGM2LnVz",
-          base64AccountId: "eGVsbmlhQGM2LnVz",
+          base64AccountId: "bCxwM4JFWg0=",
+          hexAccountId: "6c2c703382455a0d",
           resolvedBy: "profile" as const,
           cached: false
         };
@@ -257,7 +261,8 @@ test("GET /api/psn/account-id rate limits repeated requests from the same IP", a
         onlineId: "xelnia",
         accountId: "962157895908076652",
         npId: "eGVsbmlhQGM2LnVz",
-        base64AccountId: "eGVsbmlhQGM2LnVz",
+        base64AccountId: "bCxwM4JFWg0=",
+        hexAccountId: "6c2c703382455a0d",
         resolvedBy: "profile",
         cached: false
       })
