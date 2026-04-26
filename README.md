@@ -120,6 +120,91 @@ Example response when the legacy profile lookup succeeds:
 
 If the legacy profile endpoint is unavailable for that user, the service falls back to PSN universal search. In that case `accountId`, `base64AccountId`, and `hexAccountId` are still returned, but `npId` will be `null`.
 
+## Errors
+
+Client-facing errors always use this shape:
+
+```json
+{ "error": "..." }
+```
+
+### `400 Bad Request`
+
+Missing `username`:
+
+```json
+{ "error": "Missing required query parameter \"username\"." }
+```
+
+Missing client header:
+
+```json
+{ "error": "Missing required header \"X-Client-Information\". Expected \"akira-{version}\" or \"chiaki-ng-{version}\"." }
+```
+
+Invalid client header:
+
+```json
+{ "error": "Invalid \"X-Client-Information\" header. Expected \"akira-{version}\" or \"chiaki-ng-{version}\"." }
+```
+
+### `404 Not Found`
+
+No exact PSN user match:
+
+```json
+{ "error": "No PSN account could be found for username \"someuser\"." }
+```
+
+### `429 Too Many Requests`
+
+The in-app per-IP rate limiter rejected the request:
+
+```json
+{ "error": "Rate limit exceeded." }
+```
+
+Related headers:
+
+- `X-RateLimit-Limit`
+- `X-RateLimit-Remaining`
+- `X-RateLimit-Reset`
+- `Retry-After`
+
+### `503 Service Unavailable`
+
+The pod-wide lookup concurrency cap was exhausted:
+
+```json
+{ "error": "Server is busy. Try again shortly." }
+```
+
+### `502 Bad Gateway`
+
+Upstream PSN lookup or authentication failed:
+
+```json
+{ "error": "PSN lookup failed." }
+```
+
+This is the intentionally generic public response. The real cause is logged server-side.
+
+Typical operator causes include:
+
+- `PSN_NPSSO` missing
+- `PSN_NPSSO` expired or invalid
+- PSN token exchange failure
+- PSN profile/search endpoint failure
+- PSN upstream timeout
+
+In development or container logs, look for entries like:
+
+```text
+PSN lookup failed { ... error: { name, message, stack } }
+```
+
+That log entry includes the real upstream exception message.
+
 ## Metrics
 
 The service also exposes Prometheus-format metrics at:
