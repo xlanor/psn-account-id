@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: psn-account-lookup-api
+spec:
+  hosts:
+    - api.example.com
+  gateways:
+    - istio-system/public-gateway
+  http:
+    - name: account-id-lookup
+      match:
+        - uri:
+            exact: /api/psn/account-id
+      timeout: 3s
+      retries:
+        attempts: 0
+      route:
+        - destination:
+            host: psn-account-lookup-api.default.svc.cluster.local
+            port:
+              number: 80
+    - name: health
+      match:
+        - uri:
+            exact: /health
+      timeout: 1s
+      retries:
+        attempts: 0
+      route:
+        - destination:
+            host: psn-account-lookup-api.default.svc.cluster.local
+            port:
+              number: 80
+

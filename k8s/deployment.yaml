@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psn-account-lookup-api
+  labels:
+    app: psn-account-lookup-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: psn-account-lookup-api
+  template:
+    metadata:
+      labels:
+        app: psn-account-lookup-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/your-org/psn-account-lookup-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: PORT
+              value: "3000"
+            - name: TRUST_PROXY
+              value: "true"
+            - name: PSN_LOOKUP_CACHE_TTL_SECONDS
+              value: "3600"
+            - name: RATE_LIMIT_WINDOW_SECONDS
+              value: "60"
+            - name: RATE_LIMIT_MAX_REQUESTS
+              value: "30"
+            - name: PSN_LOOKUP_TIMEOUT_MS
+              value: "10000"
+            - name: MAX_CONCURRENT_LOOKUPS
+              value: "25"
+            - name: PSN_NPSSO
+              valueFrom:
+                secretKeyRef:
+                  name: psn-account-lookup-secrets
+                  key: PSN_NPSSO
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+

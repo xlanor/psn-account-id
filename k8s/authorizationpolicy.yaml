@@ -1,0 +1,20 @@
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  name: psn-account-lookup-api-public
+spec:
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+  action: ALLOW
+  rules:
+    - to:
+        - operation:
+            hosts:
+              - api.example.com
+            methods:
+              - GET
+            paths:
+              - /api/psn/account-id
+              - /health
+

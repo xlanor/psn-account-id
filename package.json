@@ -1,0 +1,22 @@
+{
+  "name": "psn-account-lookup-api",
+  "private": true,
+  "type": "module",
+  "description": "HTTP API wrapper around psn-api for PSN username to account ID lookups with caching.",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "test": "node --import tsx --test test/**/*.test.ts"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "psn-api": "^2.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
