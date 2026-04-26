@@ -139,13 +139,13 @@ Missing `username`:
 Missing client header:
 
 ```json
-{ "error": "Missing required header \"X-Client-Information\". Expected \"akira-{version}\" or \"chiaki-ng-{version}\"." }
+{ "error": "Invalid Client" }
 ```
 
 Invalid client header:
 
 ```json
-{ "error": "Invalid \"X-Client-Information\" header. Expected \"akira-{version}\" or \"chiaki-ng-{version}\"." }
+{ "error": "Invalid Client" }
 ```
 
 ### `404 Not Found`

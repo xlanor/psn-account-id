@@ -35,16 +35,14 @@ export const createClientInformationMiddleware = (): RequestHandler => {
 
     if (!request.header("x-client-information")) {
       response.status(400).json({
-        error:
-          'Missing required header "X-Client-Information". Expected "akira-{version}" or "chiaki-ng-{version}".'
+        error: "Invalid Client"
       });
       return;
     }
 
     if (!parsed) {
       response.status(400).json({
-        error:
-          'Invalid "X-Client-Information" header. Expected "akira-{version}" or "chiaki-ng-{version}".'
+        error: "Invalid Client"
       });
       return;
     }

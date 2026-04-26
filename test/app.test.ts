@@ -67,10 +67,7 @@ test("GET /api/psn/account-id returns 400 when client information header is miss
       const body = await response.json();
 
       assert.equal(response.status, 400);
-      assert.equal(
-        body.error,
-        'Missing required header "X-Client-Information". Expected "akira-{version}" or "chiaki-ng-{version}".'
-      );
+      assert.equal(body.error, "Invalid Client");
     }
   );
 });
@@ -95,10 +92,7 @@ test("GET /api/psn/account-id returns 400 when client information header is inva
       const body = await response.json();
 
       assert.equal(response.status, 400);
-      assert.equal(
-        body.error,
-        'Invalid "X-Client-Information" header. Expected "akira-{version}" or "chiaki-ng-{version}".'
-      );
+      assert.equal(body.error, "Invalid Client");
     }
   );
 });
