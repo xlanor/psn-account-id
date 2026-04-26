@@ -1,6 +1,7 @@
 export * from "./app.js";
 export * from "./config.js";
 export * from "./errors.js";
+export * from "./middleware/clientInformation.js";
 export * from "./middleware/ipRateLimit.js";
 export * from "./middleware/securityHeaders.js";
 export * from "./psn/psnAuthManager.js";

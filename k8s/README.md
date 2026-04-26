@@ -18,6 +18,7 @@ They intentionally do **not** restrict source IP ranges, because this API is int
 - `authorizationpolicy.yaml`: only allows `GET /health` and `GET /api/psn/account-id`
 - `envoyfilter-local-rate-limit.yaml`: coarse local rate limiting on the ingress gateway
 - `externalsecret.yaml`: example ESO sync for `PSN_NPSSO`
+- `kustomization.yaml`: lets a deployment worker update the image tag cleanly
 
 ## Required edits
 
@@ -25,13 +26,29 @@ Before applying, update these placeholders:
 
 - `api.example.com`
 - `istio-system/public-gateway`
-- `ghcr.io/your-org/psn-account-lookup-api:latest`
+- `ghcr.io/your-org/psn-account-lookup-api`
+- the release tag in `deployment.yaml` or `kustomization.yaml`
 - `your-secret-store`
 - `default` namespace references if you deploy elsewhere
 - ingress gateway labels if your gateway does not use `app: istio-ingressgateway`
 - the Envoy virtual host name in `envoyfilter-local-rate-limit.yaml`
   - commonly `api.example.com:80` for plain HTTP
   - commonly `api.example.com:443` for TLS
+
+## Image Publishing
+
+GitHub Actions publishes Docker images to GHCR on git tag pushes via:
+
+- `.github/workflows/publish-ghcr.yml`
+
+Published tags include:
+
+- the git tag itself, for example `v1.2.3`
+- the normalized semantic version, for example `1.2.3`
+- the major/minor tag, for example `1.2`
+- a git SHA tag
+
+For Kubernetes consumption, prefer pinning the deployment to the release tag, not `latest`.
 
 ## Apply
 

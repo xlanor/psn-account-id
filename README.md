@@ -55,6 +55,18 @@ docker run --rm -p 3000:3000 \
 
 If you already have a refresh token, you can use `PSN_REFRESH_TOKEN` instead of `PSN_NPSSO`.
 
+## Image Publishing
+
+GitHub Actions publishes a GHCR image on git tag pushes using [.github/workflows/publish-ghcr.yml](/Users/jingkai/Documents/projects/psn-api/.github/workflows/publish-ghcr.yml).
+
+The published image name is:
+
+```text
+ghcr.io/<github-owner>/<github-repo>
+```
+
+For Kubernetes, use a pinned release tag such as `v1.2.3`, not `latest`.
+
 ## Kubernetes
 
 Starter Kubernetes and Istio manifests are in [k8s/README.md](/Users/jingkai/Documents/projects/psn-api/k8s/README.md). They assume:
@@ -69,6 +81,26 @@ The Istio layer is scoped to host, method, and path, with short request timeouts
 ## Endpoint
 
 `GET /api/psn/account-id?username=<onlineId>`
+
+Required request header:
+
+```text
+X-Client-Information: akira-<version>
+```
+
+or
+
+```text
+X-Client-Information: chiaki-ng-<version>
+```
+
+Example:
+
+```bash
+curl \
+  -H "X-Client-Information: chiaki-ng-1.0.0" \
+  "https://api.example.com/api/psn/account-id?username=xelnia"
+```
 
 Example response when the legacy profile lookup succeeds:
 
@@ -102,6 +134,7 @@ If the legacy profile endpoint is unavailable for that user, the service falls b
 ## Hardening
 
 - Minimal security headers on every response
+- Required `X-Client-Information` header for public lookup requests
 - Upstream PSN lookup timeout controlled by `PSN_LOOKUP_TIMEOUT_MS`
 - Global in-process concurrency cap controlled by `MAX_CONCURRENT_LOOKUPS`
 - Browser access is not opened with CORS headers by default

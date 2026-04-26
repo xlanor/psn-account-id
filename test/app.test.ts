@@ -6,6 +6,10 @@ import type { AddressInfo } from "node:net";
 import { createApp } from "../src/app.js";
 import type { AccountLookupService } from "../src/types.js";
 
+const clientHeaders = {
+  "X-Client-Information": "chiaki-ng-1.0.0"
+};
+
 const withServer = async (
   lookupService: AccountLookupService,
   options: {
@@ -47,6 +51,57 @@ const withServer = async (
   }
 };
 
+test("GET /api/psn/account-id returns 400 when client information header is missing", async () => {
+  await withServer(
+    {
+      lookup: async () => {
+        throw new Error("Should not be called");
+      }
+    },
+    {},
+    async (baseUrl) => {
+      const response = await fetch(
+        `${baseUrl}/api/psn/account-id?username=xelnia`
+      );
+      const body = await response.json();
+
+      assert.equal(response.status, 400);
+      assert.equal(
+        body.error,
+        'Missing required header "X-Client-Information". Expected "akira-{version}" or "chiaki-ng-{version}".'
+      );
+    }
+  );
+});
+
+test("GET /api/psn/account-id returns 400 when client information header is invalid", async () => {
+  await withServer(
+    {
+      lookup: async () => {
+        throw new Error("Should not be called");
+      }
+    },
+    {},
+    async (baseUrl) => {
+      const response = await fetch(
+        `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: {
+            "X-Client-Information": "other-client-1.0.0"
+          }
+        }
+      );
+      const body = await response.json();
+
+      assert.equal(response.status, 400);
+      assert.equal(
+        body.error,
+        'Invalid "X-Client-Information" header. Expected "akira-{version}" or "chiaki-ng-{version}".'
+      );
+    }
+  );
+});
+
 test("GET /api/psn/account-id returns 400 when username is missing", async () => {
   await withServer(
     {
@@ -56,7 +111,9 @@ test("GET /api/psn/account-id returns 400 when username is missing", async () =>
     },
     {},
     async (baseUrl) => {
-      const response = await fetch(`${baseUrl}/api/psn/account-id`);
+      const response = await fetch(`${baseUrl}/api/psn/account-id`, {
+        headers: clientHeaders
+      });
       const body = await response.json();
 
       assert.equal(response.status, 400);
@@ -83,7 +140,10 @@ test("GET /api/psn/account-id returns the cached lookup payload", async () => {
     {},
     async (baseUrl) => {
       const response = await fetch(
-        `${baseUrl}/api/psn/account-id?username=xelnia`
+        `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: clientHeaders
+        }
       );
       const body = await response.json();
 
@@ -127,11 +187,17 @@ test("GET /api/psn/account-id rejects requests when concurrency is exhausted", a
     },
     async (baseUrl) => {
       const firstRequest = fetch(
-        `${baseUrl}/api/psn/account-id?username=xelnia`
+        `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: clientHeaders
+        }
       );
       await lookupStarted;
       const secondRequest = await fetch(
         `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: clientHeaders
+        }
       );
       const secondBody = await secondRequest.json();
       releaseLookup();
@@ -162,10 +228,16 @@ test("GET /api/psn/account-id rate limits repeated requests from the same IP", a
     },
     async (baseUrl) => {
       const firstResponse = await fetch(
-        `${baseUrl}/api/psn/account-id?username=xelnia`
+        `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: clientHeaders
+        }
       );
       const secondResponse = await fetch(
-        `${baseUrl}/api/psn/account-id?username=xelnia`
+        `${baseUrl}/api/psn/account-id?username=xelnia`,
+        {
+          headers: clientHeaders
+        }
       );
       const secondBody = await secondResponse.json();
 

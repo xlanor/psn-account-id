@@ -1,6 +1,7 @@
 import express from "express";
 
 import { LookupNotFoundError } from "./errors.js";
+import { createClientInformationMiddleware } from "./middleware/clientInformation.js";
 import { createIpRateLimitMiddleware } from "./middleware/ipRateLimit.js";
 import { securityHeadersMiddleware } from "./middleware/securityHeaders.js";
 import type { AccountLookupService } from "./types.js";
@@ -51,6 +52,8 @@ export const createApp = ({
   app.get("/health", (_request, response) => {
     response.json({ status: "ok" });
   });
+
+  app.use("/api/psn/account-id", createClientInformationMiddleware());
 
   app.get("/api/psn/account-id", async (request, response) => {
     const username = getUsernameFromQuery(
